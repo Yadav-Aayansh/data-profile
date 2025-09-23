@@ -1,0 +1,26 @@
+{
+  "name": "data-profile",
+  "version": "1.0.0",
+  "description": "A minimal TypeScript package that profiles arrays of records (data-frame-like) for LLM context.",
+  "main": "dist/index.min.js",
+  "types": "dist/index.min.d.ts",
+  "scripts": {
+    "build:js": "esbuild src/index.ts --bundle --minify --format=esm --outfile=dist/index.min.js",
+    "build:types": "tsc --project tsconfig.json",
+    "build": "npm run build:js && npm run build:types && mv dist/index.d.ts dist/index.min.d.ts",
+    "test": "vitest"
+  },
+  "keywords": [
+    "data-profiling",
+    "dataframe", 
+    "typescript",
+    "llm"
+  ],
+  "author": "Aayansh Yadav",
+  "license": "MIT",
+  "devDependencies": {
+    "esbuild": "^0.19.5",
+    "typescript": "^5.2.2",
+    "vitest": "^0.34.6"
+  }
+}
