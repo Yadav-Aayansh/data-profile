@@ -225,10 +225,9 @@ function computeAssociationMatrix(
         const catC = t1 === 'categorical' ? c1 : c2;
         value = etaSquaredFromData(data, numC, catC);
       }
-      if (!isNaN(value)) {
-        assoc[c1][c2] = value;
-        assoc[c2][c1] = value;
-      }
+      // Store all values including NaN to indicate when correlation cannot be computed
+      assoc[c1][c2] = value;
+      assoc[c2][c1] = value;
     }
   }
   return assoc;
@@ -389,21 +388,32 @@ export default function profile(data: Array<Record<string, unknown>>, options: P
   const colValues: Record<string, unknown[]> = {};
   columns.forEach((col) => {
     const values = data.map((row) => (col in row ? row[col] : undefined));
-    const nonMissing = values.filter((v) => v !== undefined && v !== null);
+    let nonMissing = values.filter((v) => v !== undefined && v !== null);
     const present = nonMissing.length;
     const missing = rowCount - present;
     const types = Array.from(new Set(nonMissing.map((v) => typeof v)));
     colValues[col] = nonMissing;
     let numericStats;
     if (types.length === 1 && types[0] === 'number' && nonMissing.length > 0) {
-      numericStats = computeNumericStats(nonMissing as number[]);
+      // Filter out NaN, Infinity, and -Infinity for numeric stats
+      const finiteNumbers = (nonMissing as number[]).filter((n) => Number.isFinite(n));
+      if (finiteNumbers.length > 0) {
+        numericStats = computeNumericStats(finiteNumbers);
+        // Update present count and colValues to reflect only finite numbers
+        columnStats[col] = { present: finiteNumbers.length, missing: rowCount - finiteNumbers.length, types };
+        colValues[col] = finiteNumbers;
+      } else {
+        columnStats[col] = { present: 0, missing: rowCount, types };
+        colValues[col] = [];
+      }
+    } else {
+      columnStats[col] = { present, missing, types };
     }
     let categoricalStats;
     if (types.length === 1 && (types[0] === 'string' || types[0] === 'boolean') && nonMissing.length > 0) {
       const cats = nonMissing.map((v) => v.toString());
       categoricalStats = computeCategoricalStats(cats);
     }
-    columnStats[col] = { present, missing, types };
     if (numericStats) columnStats[col].numericStats = numericStats;
     if (categoricalStats) columnStats[col].categoricalStats = categoricalStats;
   });
