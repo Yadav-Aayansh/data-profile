@@ -458,6 +458,28 @@ test('sample rows with fewer than 5 rows', () => {
   expect(summary.sampleRows[1]).toEqual({ a: 2 });
 });
 
+test('custom sample size', () => {
+  const data = Array.from({ length: 10 }, (_, i) => ({ value: i }));
+  
+  // Test with custom sample size of 3
+  const summary3 = profile(data, { sampleSize: 3 });
+  expect(summary3.sampleRows.length).toBe(3);
+  expect(summary3.sampleRows[0]).toEqual({ value: 0 });
+  expect(summary3.sampleRows[2]).toEqual({ value: 2 });
+  
+  // Test with sample size larger than data
+  const summary20 = profile(data, { sampleSize: 20 });
+  expect(summary20.sampleRows.length).toBe(10); // Should be capped at data length
+  
+  // Test with sample size of 0
+  const summary0 = profile(data, { sampleSize: 0 });
+  expect(summary0.sampleRows.length).toBe(0);
+  
+  // Test default behavior (should still be 5)
+  const summaryDefault = profile(data);
+  expect(summaryDefault.sampleRows.length).toBe(5);
+});
+
 test('sample rows with missing columns', () => {
   const data = [
     { a: 1, b: 2 },
