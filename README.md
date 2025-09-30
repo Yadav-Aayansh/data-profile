@@ -24,6 +24,7 @@ const summary = profile(data);
 
 // With advanced features
 const detailed = profile(data, {
+  sampleSize: 10,
   associationMatrix: true,
   keysDependencies: true,
   missingnessPatterns: true,
@@ -41,6 +42,7 @@ const detailed = profile(data, {
 - **Data Quality**: Primary key candidates, functional dependencies, outlier detection
 - **Missing Patterns**: Per-column rates, co-missing analysis
 - **Entropy**: Information content for categorical variables
+- **Customizable Sampling**: Control number of sample rows returned (default: 5)
 
 ## Output Structure
 
