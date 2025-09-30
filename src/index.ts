@@ -43,6 +43,7 @@ export type ProfileOptions = {
   missingnessPatterns?: boolean;
   outliers?: boolean;
   categoricalEntropy?: boolean;
+  sampleSize?: number;
 };
 
 function percentile(sorted: number[], p: number): number {
@@ -376,7 +377,7 @@ export default function profile(data: Array<Record<string, unknown>>, options: P
   const allKeys = new Set<string>();
   data.forEach((row) => Object.keys(row).forEach((k) => allKeys.add(k)));
   const columns = Array.from(allKeys).sort();
-  const sampleSize = Math.min(5, rowCount);
+  const sampleSize = Math.min(options.sampleSize ?? 5, rowCount);
   const sampleRows = data.slice(0, sampleSize).map((row) => {
     const newRow: Record<string, unknown> = {};
     columns.forEach((col) => {
