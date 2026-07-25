@@ -4,6 +4,11 @@
   "description": "A minimal TypeScript package that profiles arrays of records (data-frame-like) for LLM context.",
   "main": "dist/index.min.js",
   "types": "dist/index.min.d.ts",
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build:js": "esbuild src/index.ts --bundle --minify --format=esm --outfile=dist/index.min.js",
     "build:types": "tsc --project tsconfig.json",
